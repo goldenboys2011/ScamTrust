@@ -1,63 +1,11 @@
 {
   "scammers": [
     {
-      "id": "68aae79c-edc4-4db1-9d79-8fdf02a26e6a",
+      "id": "7b03a64b-8523-48fa-9270-c6c663f17a50",
       "discordId": "<@936320442594103307>",
       "redditUsername": null,
-      "note": "scammed 100 euros from multiple servers",
-      "displayName": "Golden"
-    },
-    {
-      "id": "3b4940fb-176f-45bd-817d-7d5fb03f0395",
-      "discordId": "<@936320442594103307>",
-      "redditUsername": "goldenboys2011",
-      "note": "scammed peaple for capes",
+      "note": "scammed for capes",
       "displayName": "golden"
-    },
-    {
-      "id": "87bc9526-78d5-4660-b9b4-c31e26a34d8b",
-      "discordId": "a",
-      "redditUsername": null,
-      "note": "a",
-      "displayName": "bomboclad"
-    },
-    {
-      "id": "52da586d-d9d2-4720-9bb5-5f6c024cba59",
-      "discordId": "<@1384179594197995520>",
-      "redditUsername": null,
-      "note": "a",
-      "displayName": "bomboclad"
-    },
-    {
-      "id": "5fdf875a-9575-460a-be75-b4c6e01193f7",
-      "discordId": null,
-      "redditUsername": "test",
-      "note": "a",
-      "displayName": "bomboclad"
-    },
-    {
-      "id": "70c6e386-1df3-4914-999d-f2807ac47a1e",
-      "displayName": "test"
-    },
-    {
-      "id": "964a5d5c-3cfd-4faa-913f-82a11a4c0247",
-      "displayName": "test"
-    },
-    {
-      "id": "4c543b3b-e515-49d8-8880-d6dccc2f053d",
-      "displayName": "test"
-    },
-    {
-      "id": "fd6d9fe7-1890-4ac8-a4a1-242e082da0fc",
-      "displayName": "test"
-    },
-    {
-      "id": "964f814a-46f1-4964-b72c-d65656753c7c",
-      "displayName": "test"
-    },
-    {
-      "id": "5ab33326-4b09-4cb1-be0f-8f910797c9dd",
-      "displayName": "test"
     }
   ],
   "reports": [
@@ -68,6 +16,41 @@
       "scam": "test",
       "displayName": "test",
       "proofUrl": "https://cdn.discordapp.com/ephemeral-attachments/1384961713761292410/1384982569589936308/unnamed.jpg?ex=68546908&is=68531788&hm=939b7b47703e737c56a70038a5bcfa3fe01fa9701b3b1016c9a56a98cf48b747&"
+    },
+    {
+      "id": "0529a06a-e920-4709-a7e0-c2abd222f930",
+      "discord": "<@936320442594103307>",
+      "reddit": null,
+      "scam": "scammed for capes",
+      "displayName": "golden",
+      "proofUrl": "https://cdn.discordapp.com/ephemeral-attachments/1384961713761292410/1385286547330302023/Bamboo_item_JE1_BE2.png?ex=68558422&is=685432a2&hm=20b6cd6fec9c63a140773f27bbf588c7ceefa94b94c67b74deb7220bf8123180&"
+    },
+    {
+      "id": "f5443065-96a6-499a-8113-8625e220a86c",
+      "discord": "<@936320442594103307>",
+      "reddit": null,
+      "scam": "scammed for capes",
+      "displayName": "golden",
+      "proofUrl": "https://cdn.discordapp.com/ephemeral-attachments/1384961713761292410/1385287873607241860/Bamboo_item_JE1_BE2.png?ex=6855855e&is=685433de&hm=e7f9b5b824148c3e54ac47a19d613240eb9c5e3af143645d355d006130b5f17e&"
+    },
+    {
+      "id": "d495f9a4-12e0-474a-8793-fb266c62050a",
+      "discord": "<@936320442594103307>",
+      "reddit": "goldenboys2011",
+      "scam": "scammed for capes",
+      "displayName": "golden",
+      "proofUrl": "https://cdn.discordapp.com/ephemeral-attachments/1384961713761292410/1385288220895477890/image-removebg-preview_6.png?ex=685585b1&is=68543431&hm=794603c936518ed6771896ac4716b2e72e0d00c66078ea2f13c25229f8d0e4e0&"
+    }
+  ],
+  "verifiedAdmins": [
+    {
+      "id": "936320442594103307"
+    },
+    {
+      "id": "1261063483630293065"
+    },
+    {
+      "id": "995280461720989726"
     }
   ]
 }

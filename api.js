@@ -65,8 +65,12 @@ app.get('/scammer/:id', express.json(), (req, res) => {
 app.get('/scammers', express.json(), (req, res) => {
   const db = loadDB();
   console.log("bruh")
-  console.log(db.scammers);
   res.json(db.scammers);
+});
+
+app.get('/admins', express.json(), (req, res) => {
+  const db = loadDB();
+  res.json(db.verifiedAdmins);
 });
 
 app.listen(3000, () => console.log('API listening on port 3000'));

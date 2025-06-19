@@ -68,6 +68,31 @@ client.on('interactionCreate', async interaction => {
     const displayName = interaction.options.getString('display');
     const note = interaction.options.getString('note');
 
+    // Step 1: Check if the command user is a verified admin
+    const adminRes = await fetch('http://localhost:3000/admins', {
+      headers: {
+        'Authorization': config.authToken
+      }
+    });
+
+    if (!adminRes.ok) {
+      return await interaction.reply({
+        content: '❌ Could not verify admin list. Try again later.',
+        ephemeral: true
+      });
+    }
+
+    const adminList = await adminRes.json();
+    const adminIds = adminList.map(admin => admin.id);
+
+    if (!adminIds.includes(interaction.user.id)) {
+      return await interaction.reply({
+        content: '❌ You are not a verified admin and cannot use this command.',
+        ephemeral: true
+      });
+    }
+
+    // Step 2: Add scammer to DB
     const res = await fetch('http://localhost:3000/scammer/add', {
       method: 'POST',
       headers: {
@@ -79,28 +104,57 @@ client.on('interactionCreate', async interaction => {
 
     if (res.ok) {
       if (discordId) {
-        try {
-          const guilds = await client.guilds.fetch();
-          for (const [guildId] of guilds) {
-            const guild = await client.guilds.fetch(guildId);
-            try {
-              const rawDiscordId = discordId?.replace(/^<@!?(\d+)>$/, '$1') || discordId;
-              await guild.members.ban(rawDiscordId, { reason: `Scammer: ${note}` });
-              console.log(`Banned ${discordId} from ${guild.name}`);
-              await interaction.reply({ content: `<:bannHammer:1384965904650997881> Banned ${discordId} from ${guild.name}`, ephemeral: true });
-            } catch (e) {
-              console.warn(`⚠️ Could not ban ${discordId} from ${guild.name}:`, e.message);
-              await interaction.reply({ content: `⚠️ Could not ban ${discordId} from ${guild.name}: ${e.message}`, ephemeral: true });
-            }
-          }
-        } catch (e) {
-          console.warn(`⚠️ Could not fetch guilds:`, e.message);
+        const guild = interaction.guild;
+        if (!guild) {
+          return await interaction.reply({ content: '❌ This command must be used in a server.', ephemeral: true });
         }
+
+        try {
+          const rawDiscordId = discordId.replace(/^<@!?(\d+)>$/, '$1');
+          await guild.members.ban(rawDiscordId, { reason: `Scammer: ${note}` });
+          console.log(`✅ Banned ${rawDiscordId} from ${guild.name}`);
+          await interaction.reply({
+            content: `<:bannHammer:1384965904650997881> Banned <@${rawDiscordId}> from **${guild.name}**`
+          });
+        } catch (e) {
+          console.warn(`⚠️ Could not ban ${discordId} from ${guild.name}:`, e.message);
+          await interaction.reply({
+            content: `⚠️ Could not ban <@${discordId}> from **${guild.name}**: ${e.message}`,
+            ephemeral: true
+          });
+        }
+      } else {
+        await interaction.reply({
+          content: 'ℹ️ Scammer added without Discord ID. No ban performed.',
+          ephemeral: true
+        });
+      }
+
+      const alertChannelId = '1378652997692948590';
+      const alertChannel = await client.channels.fetch(alertChannelId);
+      console.log(alertChannel)
+
+      if (alertChannel && alertChannel.isTextBased()) {
+        const embed = {
+          title: '🚨 Scammer Alert',
+          color: 0xff0000,
+          fields: [
+            { name: 'Discord ID', value: discordId || 'N/A', inline: true },
+            { name: 'Reddit Username', value: redditUsername || 'N/A', inline: true },
+            { name: 'Display Name', value: displayName || 'N/A', inline: true },
+            { name: 'Note', value: note || 'N/A' },
+            { name: 'Symbited By Admin', value: `<@${interaction.user.id}>`, inline: false}
+          ],
+          timestamp: new Date().toISOString()
+        };
+
+        await alertChannel.send({ embeds: [embed] });
       }
     } else {
-      await interaction.reply({ content: 'Failed to add scammer.', ephemeral: true });
+      await interaction.reply({ content: '❌ Failed to add scammer to the database.', ephemeral: true });
     }
   }
+
 
   // =====SCAMMER GET COMMAND=====
   if (interaction.commandName === 'scammer') {
@@ -234,8 +288,7 @@ client.on('interactionCreate', async interaction => {
     const proof = interaction.options.getAttachment('proof');
     const discord = interaction.options.getString('discord');
     const reddit = interaction.options.getString('reddit');
-    
-    const proofUrl = proof.url
+    const proofUrl = proof?.url;
 
     const res = await fetch('http://localhost:3000/report/add', {
       method: 'POST',
@@ -246,20 +299,135 @@ client.on('interactionCreate', async interaction => {
       body: JSON.stringify({ discord, reddit, displayName, scam, proofUrl })
     });
 
-    const embed = new EmbedBuilder()
+    // Confirmation Embed
+    const userEmbed = new EmbedBuilder()
       .setTitle('🚨 Scammer Report Submitted')
       .addFields(
         { name: 'Display Name', value: displayName },
         { name: 'Scam Details', value: scam },
         { name: 'Discord ID', value: discord || 'N/A', inline: true },
         { name: 'Reddit', value: reddit || 'N/A', inline: true },
-        {name: 'Proof: ', value: ""}
+        { name: 'Proof', value: proofUrl || 'N/A' }
       )
       .setImage(proofUrl)
       .setColor(0xff0000);
 
-    return interaction.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [userEmbed], ephemeral: true });
+
+    // Review Embed
+    const modEmbed = new EmbedBuilder()
+      .setTitle('🛡️ New Scammer Report - Pending Review')
+      .addFields(
+        { name: 'Display Name', value: displayName },
+        { name: 'Scam Details', value: scam },
+        { name: 'Discord ID', value: discord || 'N/A', inline: true },
+        { name: 'Reddit', value: reddit || 'N/A', inline: true },
+        { name: 'Submitted by', value: `<@${interaction.user.id}>` },
+        { name: "Proof", value: ""}
+      )
+      .setImage(proofUrl)
+      .setColor(0xffcc00)
+      .setTimestamp();
+
+    // Buttons
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('approve_report')
+        .setLabel('✅ Approve')
+        .setStyle(ButtonStyle.Success),
+      new ButtonBuilder()
+        .setCustomId('decline_report')
+        .setLabel('❌ Decline')
+        .setStyle(ButtonStyle.Danger)
+    );
+
+    // Send to mod review channel
+    const reviewChannel = await client.channels.fetch('1385284951771189308');
+    const modMessage = await reviewChannel.send({
+      content: "<@&1378520140831789128>",
+      embeds: [modEmbed],
+      components: [buttons]
+    });
+
+    // Collector
+    const collector = modMessage.createMessageComponentCollector({ time: 60 * 60 * 1000 }); // 1 hour
+
+    collector.on('collect', async (btnInt) => {
+      if (!btnInt.memberPermissions?.has('BanMembers')) {
+        return btnInt.reply({ content: '❌ You lack permission.', ephemeral: true });
+      }
+
+      const rawDiscordId = discord?.replace(/^<@!?(\d+)>$/, '$1') || discord;
+
+      if (btnInt.customId === 'approve_report') {
+        // Add scammer
+        await fetch('http://localhost:3000/scammer/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': config.authToken
+          },
+          body: JSON.stringify({
+            discordId: rawDiscordId,
+            redditUsername: reddit,
+            displayName,
+            note: scam
+          })
+        });
+
+        // Ban from current guild (where command was used)
+        try {
+          const guild = interaction.guild;
+          if (guild) {
+            await guild.members.ban(rawDiscordId, { reason: `Scammer: ${scam}` });
+          }
+        } catch (err) {
+          console.warn('⚠️ Ban failed:', err.message);
+        }
+
+        // Send alert embed to scammer channel
+        const scammerAlertEmbed = new EmbedBuilder()
+          .setTitle('🚨 Scammer Alert')
+          .addFields(
+            { name: 'Display Name', value: displayName },
+            { name: 'Discord ID', value: discord || 'N/A', inline: true },
+            { name: 'Reddit Username', value: reddit || 'N/A', inline: true },
+            { name: 'Reason', value: scam },
+            { name: 'Reported By', value: `<@${interaction.user.id}>` }
+          )
+          .setImage(proofUrl)
+          .setColor(0xff0000)
+          .setTimestamp();
+
+        const scammerAlertChannel = await client.channels.fetch('1378652997692948590');
+        if (scammerAlertChannel && scammerAlertChannel.isTextBased()) {
+          await scammerAlertChannel.send({ embeds: [scammerAlertEmbed] });
+        }
+
+        // DM the reporter
+        try {
+          await interaction.user.send('✅ Your scammer report has been **approved**, the user has been **banned**, and the report was logged.');
+        } catch (e) {
+          console.warn('⚠️ Failed to DM user:', e.message);
+        }
+
+        await btnInt.update({ content: '✅ Report approved. Scammer added, banned, and alert sent.', components: [] });
+      }
+
+      if (btnInt.customId === 'decline_report') {
+        try {
+          await interaction.user.send('❌ Your scammer report has been reviewed but was **declined** by a moderator.');
+        } catch (e) {
+          console.warn('⚠️ Failed to DM user:', e.message);
+        }
+
+        await btnInt.update({ content: '❌ Report declined.', components: [] });
+      }
+
+      collector.stop();
+    });
   }
+
 
 });
 
