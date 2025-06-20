@@ -41,6 +41,13 @@
       "redditUsername": "goldenboys2011YT",
       "note": "Banned as stealing capes",
       "displayName": "Golden"
+    },
+    {
+      "id": "9fb91d75-db73-4804-aab2-1b529807bb4a",
+      "discordId": "@test",
+      "redditUsername": null,
+      "note": "test",
+      "displayName": "test"
     }
   ],
   "reports": [
@@ -88,6 +95,15 @@
       "id": "995280461720989726"
     }
   ],
-  "redditBan": [],
-  "acceptedSubs": ["minecraftcapes2", "VolosGreece"]
+  "redditBan": [
+    {
+      "id": "9fb91d75-db73-4804-aab2-1b529807bb4a",
+      "redditUsername": null,
+      "note": "test"
+    }
+  ],
+  "acceptedSubs": [
+    "minecraftcapes2",
+    "VolosGreece"
+  ]
 }

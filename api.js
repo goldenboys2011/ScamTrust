@@ -14,7 +14,8 @@ const apiEndpointsStatus = {
   '/report/add': 'running',
   '/scammer/:id': 'running',
   '/scammers': 'running',
-  '/admins': 'running'
+  '/admins': 'running',
+  '/reports': 'running'
 };
 
 let apiStatus = 'running';  // Overall API status
@@ -107,6 +108,15 @@ app.get('/scammers', express.json(), (req, res) => {
   }
 });
 
+app.get('/reports', express.json(), (req, res) => {
+  try {
+    const db = loadDB();
+    res.json(db.reports);
+  } catch (e) {
+    apiEndpointsStatus['/reports'] = 'error';
+    res.status(500).json({ error: 'Failed to fetch reports' });
+  }
+});
 app.get('/admins', express.json(), (req, res) => {
   try {
     const db = loadDB();

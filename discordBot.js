@@ -53,14 +53,20 @@ const commands = [
     .toJSON(),
 
   new SlashCommandBuilder()
-  .setName('ping')
-  .setDescription('Get ScamTrust Service Status')
-  .toJSON(),
+    .setName('ping')
+    .setDescription('Get ScamTrust Service Status')
+    .toJSON(),
 
   new SlashCommandBuilder()
-  .setName('status')
-  .setDescription('Get ScamTrust Service Status')
-  .toJSON()
+    .setName('status')
+    .setDescription('Get ScamTrust Service Status')
+    .toJSON(),
+
+  new SlashCommandBuilder()
+    .setName('scan')
+    .setDescription('Scan scam history of a Discord user')
+    .addStringOption(opt => opt.setName('user').setDescription('Discord mention or ID').setRequired(true))
+    .toJSON(),
 ];
 
 
@@ -88,8 +94,15 @@ client.once('ready', async () => {
 // Handle commands
 client.on('interactionCreate', async interaction => {
   try{
+    log("Discord", "Interaction", color.gray)
     if (!interaction.isChatInputCommand()) return;
-    
+
+    if (interaction.commandName === 'scan') {
+      await interaction.deferReply();
+      await wait(4_000);
+		  await interaction.editReply('Pong!');
+    }
+
     if (interaction.commandName === 'ping' || interaction.commandName === 'status') {
       try {
         const statusRes = await fetch('http://localhost:4729/status');
@@ -136,9 +149,6 @@ client.on('interactionCreate', async interaction => {
         });
       }
     }
-
-
-
 
     if (interaction.commandName === 'addscammer') {
       const discordId = interaction.options.getString('discord');
@@ -509,8 +519,6 @@ client.on('interactionCreate', async interaction => {
     log("Discord",e, color.red)
     setDiscordStatus("error")
   }
-
-
 });
 
 // Start bot
