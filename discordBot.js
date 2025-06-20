@@ -97,11 +97,62 @@ client.on('interactionCreate', async interaction => {
     log("Discord", "Interaction", color.gray)
     if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === 'scan') {
-      await interaction.deferReply();
-      await wait(4_000);
-		  await interaction.editReply('Pong!');
+  if (interaction.commandName === 'scan') {
+    const rawInput = interaction.options.getString('user');
+    const discordId = rawInput.replace(/^<@!?(\d+)>$/, '$1');
+
+    await interaction.deferReply({ ephemeral: true }); // 👈 ADD THIS LINE
+
+    try {
+      const scammerRes = await fetch('http://localhost:4729/scammers', {
+        headers: { 'Authorization': config.authToken }
+      });
+
+      const reportRes = await fetch('http://localhost:4729/reports', {
+        headers: { 'Authorization': config.authToken }
+      });
+
+      if (!scammerRes.ok || !reportRes.ok) {
+        return interaction.editReply({
+          content: '❌ Failed to fetch data from database.'
+        });
+      }
+
+      const scammers = await scammerRes.json();
+      const reports = await reportRes.json();
+
+      const matchedScammers = scammers.filter(s => (s.discordId || '').includes(discordId));
+      const matchedReports = reports.filter(r => (r.discord || '').includes(discordId));
+
+      const embed = new EmbedBuilder()
+        .setTitle('🕵️ User Scan')
+        .setColor(0x0077ff)
+        .addFields(
+          {
+            name: '🔒 Scammers Under Username',
+            value: matchedScammers.length > 0
+              ? matchedScammers.map(s => `• **${s.displayName}** — ${s.note || 'No note'}\n\`${s.id}\``).join('\n\n')
+              : '*No scammers found.*'
+          },
+          {
+            name: '📣 User Reported With This Username',
+            value: matchedReports.length > 0
+              ? matchedReports.map(r => `• **${r.displayName}** — ${r.scam || 'No reason'}\n[Proof](${r.proofUrl || '#'})`).join('\n\n')
+              : '*No reports found.*'
+          }
+        )
+        .setFooter({ text: `Scan result for ID: ${discordId}` })
+        .setTimestamp();
+
+      await interaction.editReply({ embeds: [embed] });
+
+    } catch (err) {
+      log("Discord", '❌ /scan command failed: ' + err.message, color.red);
+      await interaction.editReply({
+        content: '❌ Internal error while checking user.'
+      });
     }
+  }
 
     if (interaction.commandName === 'ping' || interaction.commandName === 'status') {
       try {
