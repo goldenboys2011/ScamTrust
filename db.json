@@ -6,6 +6,41 @@
       "redditUsername": null,
       "note": "scammed for capes",
       "displayName": "golden"
+    },
+    {
+      "id": "73c1c6d7-2d1b-40f1-9df0-eb621c87d7dc",
+      "discordId": null,
+      "redditUsername": "goldenboys2011YT",
+      "note": "Scammed A lot of peaple for mce capes for \"free\" games",
+      "displayName": "Golden's Test"
+    },
+    {
+      "id": "64db3846-a576-46fc-9abe-b9e962356a48",
+      "discordId": null,
+      "redditUsername": "goldenboys2011YT",
+      "note": "Banned as stealing capes",
+      "displayName": "Golden"
+    },
+    {
+      "id": "9d98cbf5-d6f3-4f13-96a7-bff11a97213c",
+      "discordId": null,
+      "redditUsername": "goldenboys2011YT",
+      "note": "Banned as stealing capes",
+      "displayName": "Golden"
+    },
+    {
+      "id": "7009e23c-7fe8-4ac1-84a5-87860c5ebbe8",
+      "discordId": null,
+      "redditUsername": "goldenboys2011YT",
+      "note": "Banned as stealing capes",
+      "displayName": "Golden"
+    },
+    {
+      "id": "5c22c7f2-e6a2-4608-a663-6ad64f7b18b7",
+      "discordId": null,
+      "redditUsername": "goldenboys2011YT",
+      "note": "Banned as stealing capes",
+      "displayName": "Golden"
     }
   ],
   "reports": [
@@ -52,5 +87,7 @@
     {
       "id": "995280461720989726"
     }
-  ]
+  ],
+  "redditBan": [],
+  "acceptedSubs": ["minecraftcapes2", "VolosGreece"]
 }
