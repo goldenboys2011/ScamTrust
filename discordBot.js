@@ -92,7 +92,7 @@ client.on('interactionCreate', async interaction => {
     
     if (interaction.commandName === 'ping' || interaction.commandName === 'status') {
       try {
-        const statusRes = await fetch('http://localhost:3000/status');
+        const statusRes = await fetch('http://localhost:4729/status');
         const statusJson = await statusRes.json();
 
         const statusDot = (status) => {
@@ -147,7 +147,7 @@ client.on('interactionCreate', async interaction => {
       const note = interaction.options.getString('note');
 
       // Step 1: Check if the command user is a verified admin
-      const adminRes = await fetch('http://localhost:3000/admins', {
+      const adminRes = await fetch('http://localhost:4729/admins', {
         headers: {
           'Authorization': config.authToken
         }
@@ -171,7 +171,7 @@ client.on('interactionCreate', async interaction => {
       }
 
       // Step 2: Add scammer to DB
-      const res = await fetch('http://localhost:3000/scammer/add', {
+      const res = await fetch('http://localhost:4729/scammer/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -238,8 +238,8 @@ client.on('interactionCreate', async interaction => {
       const id = interaction.options.getString('id');
 
       try {
-        let url = 'http://localhost:3000/scammers';
-        if (id) url = `http://localhost:3000/scammer/${encodeURIComponent(id)}`;
+        let url = 'http://localhost:4729/scammers';
+        if (id) url = `http://localhost:4729/scammer/${encodeURIComponent(id)}`;
 
         const res = await fetch(url, {
           headers: { 'Authorization': config.authToken }
@@ -367,7 +367,7 @@ client.on('interactionCreate', async interaction => {
       const reddit = interaction.options.getString('reddit');
       const proofUrl = proof?.url;
 
-      const res = await fetch('http://localhost:3000/report/add', {
+      const res = await fetch('http://localhost:4729/report/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -438,7 +438,7 @@ client.on('interactionCreate', async interaction => {
 
         if (btnInt.customId === 'approve_report') {
           // Add scammer
-          await fetch('http://localhost:3000/scammer/add', {
+          await fetch('http://localhost:4729/scammer/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
